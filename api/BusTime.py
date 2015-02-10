@@ -1,12 +1,14 @@
 #coding: utf-8
 import time
 import datetime
-import requests
 import json
 from itertools import groupby
-# import logging
+import requests
+from cachecore import RedisCache
+from .cache import cache_func
 
 APIPREFIX = 'http://api.chelaile.net.cn:7000/'
+rediscache = RedisCache(default_timeout=3600*24*30)
 
 # def getsignature():
 #     input_str = str(int(time.time()*1000))
@@ -97,7 +99,7 @@ class BusTime(object):
     def get_bus_infos(cls, busNo):
         url = 'bus/query!search.action?LsName=%s&s=android&v=1.3.2&cityId=%s&sign=' % (busNo, cityid)
         # result = {}
-        data = _req_data(url)
+        data = cls._req_data(url)
         if not data:
             return None
         ## 路线的各个站点的名称和gps信息
@@ -116,7 +118,7 @@ class BusTime(object):
     @classmethod
     def get_bus_realtime(cls, lineId, cityid, search_stop_name):
         url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineId, cityid)
-        data = _req_data(url)
+        data = cls._req_data(url)
         result = {}
         if not data:
             return None
@@ -139,44 +141,24 @@ class BusTime(object):
                     remaining_num = order - max_order
                     print u'还有%s站' % remaining_num
 
-                
-
+    @classmethod
+    @cache_func(rediscache, None)
+    def get_bus_orders(cls, lineId, cityid):
+        url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineId, cityid)
+        data = cls._req_data(url)
+        if not data:
+            return None
+        if data['map']:
+            return [(i['order'], i['stopName']) for i in data['map']]
+        else:
+            return None
 
 
 
        
 if __name__ == '__main__':
-    # print BusTime.get_cities()
-    print BusTime.get_bus_infos(u'化工大楼', '006')
+    # print BusTime.get_cities() pickle不能操作生成器 iter(list)转化为生成器
+    busmap = BusTime.get_bus_orders('022-610-0', '006')
+    for _, stop in iter(busmap):
+        print stop
     # print BusTime.search_by_busno('879')
-
-# url = 'http://api.chelaile.net.cn:7000/bus/line!map2.action?lineId=022-610-0&s=IOS&v=2.9&cityId=006&sign'
-# r=requests.get(url)
-# c=r.content
-# cc=c.replace('**YGKJ','').replace('YGKJ##','')
-# len(json.loads(cc)['jsonr']['data']['bus'])
-
-# url1='http://api.chelaile.net.cn:7000//bus/line!gps.action?lineId=022-610-0&s=IOS&v=2.9&cityId=006&sign='
-
-
-
-# r=requests.get(url2)
-# c=r.content
-# cc=c.replace('**YGKJ','').replace('YGKJ##','')
-# json.loads(cc)['jsonr']['data']['gps']
-
-# {
-# "carNo": "10224",
-# "jingdu": 117.194007978736,
-# "weidu": 39.1667495879065
-# },
-# {
-# "carNo": "11773",
-# "jingdu": 117.192327576791,
-# "weidu": 39.1554654940316
-# },
-# {
-# "carNo": "11788",
-# "jingdu": 117.193738284597,
-# "weidu": 39.1567202653248
-# },

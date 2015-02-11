@@ -1,14 +1,14 @@
-#coding: utf-8
-import time
-import datetime
+# coding: utf-8
 import json
 from itertools import groupby
 import requests
 from cachecore import RedisCache
 from .cache import cache_func
 
+
 APIPREFIX = 'http://api.chelaile.net.cn:7000/'
-rediscache = RedisCache(default_timeout=3600*24*30)
+rediscache = RedisCache(default_timeout=3600 * 24 * 30)
+
 
 class BusTime(object):
     @classmethod
@@ -19,7 +19,7 @@ class BusTime(object):
             print 'url=%s, error is %s' % (url, ex.message)
             return None
         c = r.content
-        c = c.replace('**YGKJ','').replace('YGKJ##','')
+        c = c.replace('**YGKJ', '').replace('YGKJ##', '')
         j = json.loads(c)
         if j['jsonr']['data']:
             return j['jsonr']['data']
@@ -38,45 +38,24 @@ class BusTime(object):
         else:
             return None
 
-    '''根据站点名字查找公交车路线 返回的是字典数据格式 {开往方向:线路list}
-       每个线路的属性包括下面的属性
-        "direction": 0, 方向 1为反方向
-        "endStopName": "杨村客运站", 终点站
-        "leftStop": 3,
-        "leftStopNum": 3, leftStopNum意思是说该线路上面的最近的一个车距离本站还有多少站 -2暂无数据 -1尚未发车 1 即将到站
-        "lineId": "022-607-0",
-        "lineName": "607", 公交车的名字
-        "lineNo": "607",
-        "nextStop": "九十二中", 下一站名称 也就是开往何方向的意思
-        "proTime": -1,
-        "startStopName": "天津站后广场" 始发站
-    '''
     @classmethod
     def search_by_stopname(cls, stopname, cityid):
-        result = {}
-        url = 'bus/stop!stoplist.action?stopName=%s&s=android&v=1.3.2&cityId=%s&sign=' % (stopname, cityid)
+        url = 'bus/stop!stoplist.action?stopName={0}&s=android&v=1.3.2&cityId={1}&sign='.format(stopname.encode('utf-8'), cityid)
         data = cls._req_data(url)
-        
         data_has_lines = 'lines' in data
         if data and data_has_lines:
             lines = data['lines']
-            sortkeyfn = lambda s:s['nextStop']
+            sortkeyfn = lambda s: s['nextStop']
             lines.sort(key=sortkeyfn)
-            for k, v in groupby(lines, key=sortkeyfn):
-                print v
-                result[k] = list(v)
-            return result
+            result_list = [u'开往{0}方向的线路有{1}条'.format(k, len(list(v))) for k, v in groupby(lines, key=sortkeyfn)]
+            return '\n'.join(result_list)
         else:
             return None
 
-    '''
-        examples:
-        LsName: 610
-    '''
     @classmethod
     @cache_func(rediscache, None)
-    def get_line_infos(cls, lineNo, cityid):
-        url = 'bus/query!search.action?LsName=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineNo, cityid)
+    def get_line_infos(cls, lineno, cityid):
+        url = 'bus/query!search.action?LsName=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineno, cityid)
         data = cls._req_data(url)
         data_has_line = 'line' in data
         line_list = data['linelist']
@@ -84,10 +63,9 @@ class BusTime(object):
             line_info = data['line']
             return line_info
         elif data and (not data_has_line) and len(line_list) > 0:
-            lineId = line_list[0]['lineId']
-            lineNo = lineId.split('-')[1]
-            url = 'bus/query!search.action?LsName=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineNo, cityid)
-            print url
+            lineid = line_list[0]['lineId']
+            lineno = lineid.split('-')[1]
+            url = 'bus/query!search.action?LsName=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineno, cityid)
             data = cls._req_data(url)
             line_info = data['line']
             return line_info
@@ -95,31 +73,37 @@ class BusTime(object):
             return None
 
     @classmethod
-    def get_bus_realtime(cls, lineId, cityid, search_stop_name):
-        url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineId, cityid)
+    def get_bus_realtime(cls, lineid, cityid, search_stop_name_or_id):
+        url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineid, cityid)
         data = cls._req_data(url)
-        result = {}
-        if data:
-            line_orders = cls.get_line_orders(lineId, cityid)
-            if line_orders:
-                pass
-            search_stop_name
-
-        if data['bus']:
+        line_orders = cls.get_line_orders(lineid, cityid)
+        order = 0
+        if data and line_orders and ('bus' in data) and data['bus']:
+            for k, v in iter(line_orders):
+                if k == search_stop_name_or_id or v == search_stop_name_or_id:
+                    order = k
+                    break
+            if not order:
+                print u'找不到该站点'
+                return None
             bus_list = filter(lambda x: x['order'] <= order, data['bus'])
-            if bus_list:
-                max_order = max(bus_list, key=lambda x:x['order'])
-                if max_order == order:
-                    print u'即将到站'
-                    print u'距离为%s'
-                else:
-                    remaining_num = order - max_order
-                    print u'还有%s站' % remaining_num
+            if not bus_list:
+                return u'距离上次发车时间为{0}分钟'.format(data['busBehindTime'])
+
+            max_order_dict = max(bus_list, key=lambda x: x['order'])
+            max_order = max_order_dict['order']
+            if order > max_order:
+                remaining_num = order - max_order
+                return u'最近一辆车{0}秒前报告位置, 距离本站{1}站'.format(max_order_dict['lastTime'], remaining_num)
+            elif order == max_order:
+                return u'最近一辆车{0}秒前报告位置, 即将到站. 距离{1}米'.format(max_order_dict['lastTime'], max_order_dict['distance'])
+        else:
+            print u'realtime data is none'
 
     @classmethod
     @cache_func(rediscache, None)
-    def get_line_orders(cls, lineId, cityid):
-        url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineId, cityid)
+    def get_line_orders(cls, lineid, cityid):
+        url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineid, cityid)
         data = cls._req_data(url)
         data_map = data['map']
         if data and data_map:

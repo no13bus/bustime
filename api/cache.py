@@ -1,5 +1,6 @@
-#coding: utf8
-# decorator for cache 
+# coding: utf8
+
+
 def cache_func(cache_instance, timeout=None):
     def dec(func):
         def wrapper(*args, **kwargs):
@@ -10,9 +11,9 @@ def cache_func(cache_instance, timeout=None):
             else:
                 value = func(*args, **kwargs)
                 if value:
-                    cache_instance.set(key, value)
+                    cache_instance.set(key, value, timeout)
                     return value
                 else:
                     return None
         return wrapper
-    return  dec
+    return dec

@@ -130,7 +130,7 @@ class BusTime(object):
                 max_order = max(bus_list, key=lambda x:x['order'])
                 if max_order == order:
                     print u'即将到站'
-                    print u'距离为%s' max_order['distance']
+                    # print u'距离为%s' max_order['distance']
                 else:
                     remaining_num = order - max_order
                     print u'还有%s站' % remaining_num

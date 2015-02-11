@@ -3,7 +3,7 @@
 
 # decorator for cache 
 def cache_func(cache_instance, timeout=None):
-    def decorator(func):
+    def dec(func):
         def wrapper(*args, **kwargs):
             key = '%s:%s|' % (func.__module__, func.__name__) + repr((args, kwargs))
             result = cache_instance.get(key)
@@ -14,4 +14,4 @@ def cache_func(cache_instance, timeout=None):
                 cache_instance.set(key, value)
                 return value
         return wrapper
-    return  decorator
+    return  dec

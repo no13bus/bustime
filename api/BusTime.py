@@ -4,9 +4,17 @@ import datetime
 import json
 from itertools import groupby
 import requests
+<<<<<<< HEAD
 from cachecore import SimpleCache, MemcachedCache, RedisCache, FileSystemCache
 from .cache import cache_func
 
+=======
+from cachecore import RedisCache
+from .cache import cache_func
+
+APIPREFIX = 'http://api.chelaile.net.cn:7000/'
+rediscache = RedisCache(default_timeout=3600*24*30)
+>>>>>>> 42531fcac1a5f79b57e0577a253db88a0a58f6c9
 
 APIPREFIX = 'http://api.chelaile.net.cn:7000/'
 rediscache = RedisCache(default_timeout=3600*24*30)
@@ -93,7 +101,7 @@ class BusTime(object):
     def get_bus_infos(cls, busNo):
         url = 'bus/query!search.action?LsName=%s&s=android&v=1.3.2&cityId=%s&sign=' % (busNo, cityid)
         # result = {}
-        data = _req_data(url)
+        data = cls._req_data(url)
         if not data:
             return None
         ## 路线的各个站点的名称和gps信息
@@ -112,7 +120,7 @@ class BusTime(object):
     @classmethod
     def get_bus_realtime(cls, lineId, cityid, search_stop_name):
         url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineId, cityid)
-        data = _req_data(url)
+        data = cls._req_data(url)
         result = {}
         if not data:
             return None
@@ -130,7 +138,11 @@ class BusTime(object):
                 max_order = max(bus_list, key=lambda x:x['order'])
                 if max_order == order:
                     print u'即将到站'
+<<<<<<< HEAD
                     # print u'距离为%s' max_order['distance']
+=======
+                    print u'距离为%s'
+>>>>>>> 42531fcac1a5f79b57e0577a253db88a0a58f6c9
                 else:
                     remaining_num = order - max_order
                     print u'还有%s站' % remaining_num
@@ -139,6 +151,7 @@ class BusTime(object):
     @cache_func(rediscache, None)
     def get_bus_orders(cls, lineId, cityid):
         url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineId, cityid)
+<<<<<<< HEAD
         data = _req_data(url)
         if not data:
             return None
@@ -147,11 +160,21 @@ class BusTime(object):
         else:
             return None
 
+=======
+        data = cls._req_data(url)
+        if not data:
+            return None
+        if data['map']:
+            return [(i['order'], i['stopName']) for i in data['map']]
+        else:
+            return None
+>>>>>>> 42531fcac1a5f79b57e0577a253db88a0a58f6c9
 
 
 
        
 if __name__ == '__main__':
+<<<<<<< HEAD
     # print BusTime.get_cities()
     print BusTime.get_bus_orders(u'化工大楼', '006')
     # print BusTime.search_by_busno('879')
@@ -186,3 +209,10 @@ if __name__ == '__main__':
 # "jingdu": 117.193738284597,
 # "weidu": 39.1567202653248
 # },
+=======
+    # print BusTime.get_cities() pickle不能操作生成器 iter(list)转化为生成器
+    busmap = BusTime.get_bus_orders('022-610-0', '006')
+    for _, stop in iter(busmap):
+        print stop
+    # print BusTime.search_by_busno('879')
+>>>>>>> 42531fcac1a5f79b57e0577a253db88a0a58f6c9

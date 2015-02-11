@@ -1,19 +1,15 @@
 #coding: utf-8
 import time
 import datetime
-import requests
 import json
 from itertools import groupby
-# import logging
+import requests
+from cachecore import SimpleCache, MemcachedCache, RedisCache, FileSystemCache
+from .cache import cache_func
+
 
 APIPREFIX = 'http://api.chelaile.net.cn:7000/'
-
-# def getsignature():
-#     input_str = str(int(time.time()*1000))
-#     key_str = "woqunimalegebi1234567890"
-#     key_bytes = key_str.encode('utf-8')
-#     k = triple_des(key_bytes, ECB, pad=None, padmode=PAD_PKCS5)
-#     d = base64.b64encode(k.encrypt(input_str))
+rediscache = RedisCache(default_timeout=3600*24*30)
 
 
 class BusTime(object):
@@ -134,12 +130,22 @@ class BusTime(object):
                 max_order = max(bus_list, key=lambda x:x['order'])
                 if max_order == order:
                     print u'即将到站'
-                    print u'距离为%s' max_order['distance']
+                    # print u'距离为%s' max_order['distance']
                 else:
                     remaining_num = order - max_order
                     print u'还有%s站' % remaining_num
 
-                
+    @classmethod
+    @cache_func(rediscache, None)
+    def get_bus_orders(cls, lineId, cityid):
+        url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineId, cityid)
+        data = _req_data(url)
+        if not data:
+            return None
+        if data['map']:
+            return ((i['order'], i['stopName']) for i in data['map'])
+        else:
+            return None
 
 
 
@@ -147,7 +153,7 @@ class BusTime(object):
        
 if __name__ == '__main__':
     # print BusTime.get_cities()
-    print BusTime.get_bus_infos(u'化工大楼', '006')
+    print BusTime.get_bus_orders(u'化工大楼', '006')
     # print BusTime.search_by_busno('879')
 
 # url = 'http://api.chelaile.net.cn:7000/bus/line!map2.action?lineId=022-610-0&s=IOS&v=2.9&cityId=006&sign'

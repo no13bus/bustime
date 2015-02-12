@@ -53,7 +53,7 @@ class BusTime(object):
             return None
 
     @classmethod
-    @cache_func(rediscache, None)
+    @cache_func(rediscache, timeout=3600)
     def get_line_infos(cls, lineno, cityid):
         url = 'bus/query!search.action?LsName=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineno, cityid)
         data = cls._req_data(url)
@@ -64,6 +64,18 @@ class BusTime(object):
             return line_info
         elif data and (not data_has_line) and len(line_list) > 0:
             return line_list
+        else:
+            return None
+
+    @classmethod
+    @cache_func(rediscache, None)
+    def get_real_line_infos(cls, lineid, cityid):
+        url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineid, cityid)
+        data = cls._req_data(url)
+        data_has_line = 'line' in data
+        if data and data_has_line:
+            line_info = data['line']
+            return line_info
         else:
             return None
 

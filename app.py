@@ -39,7 +39,7 @@ def query(**kwargs):
 
     lineid = '-'.join(cs[0:3])
     print lineid
-    real_lineinfo = get_real_line_infos(lineid, cityid)
+    real_lineinfo = BusTime.get_real_line_infos(lineid, cityid)
     search_stop_name_or_id = cs[-1]
     reply_businfo = u'%s->%s\n首:%s  终:%s\n' % (real_lineinfo['startStopName'], real_lineinfo['endStopName'], real_lineinfo['firstTime'], real_lineinfo['lastTime'])
     reply_realtime_info = BusTime.get_bus_realtime(lineid, cityid, search_stop_name_or_id)

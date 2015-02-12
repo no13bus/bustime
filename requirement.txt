@@ -1,5 +1,3 @@
 requests
 cachecore
 click
-redis
-Flask-Weixin

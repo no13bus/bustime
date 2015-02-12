@@ -36,17 +36,13 @@ def query(**kwargs):
     elif lineinfo and isinstance(lineinfo, list):
         reply = u'亲 没找到呢。猜你想查找的是下面的线路id:\n' + '\n'.join([line['lineId'] for line in lineinfo])
         return weixin.reply(username, sender=sender, content=reply)
-    elif lineinfo and isinstance(lineinfo, unicode):
-        return weixin.reply(username, sender=sender, content=lineinfo)
 
-    print type(lineinfo)
-    
-    lineid = lineinfo['lineId']
+    lineid = '-'.join.(cs[0:3])
     search_stop_name_or_id = cs[-1]
     reply_businfo = u'%s->%s\n首:%s  终:%s\n' % (lineinfo['startStopName'], lineinfo['endStopName'], lineinfo['firstTime'], lineinfo['lastTime'])
     reply_realtime_info = BusTime.get_bus_realtime(lineid, cityid, search_stop_name_or_id)
     if not reply_realtime_info:
-        reply_realtime_info = 'can not get the realtime info'
+        reply_realtime_info = u'获取不到实时公交信息, 稍后试试呢'
     print reply_businfo, reply_realtime_info
     reply = '%s  %s' % (reply_businfo, reply_realtime_info)
     return weixin.reply(username, sender=sender, content=reply)

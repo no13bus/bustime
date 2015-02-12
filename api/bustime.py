@@ -63,12 +63,6 @@ class BusTime(object):
             line_info = data['line']
             return line_info
         elif data and (not data_has_line) and len(line_list) > 0:
-            # lineid = line_list[0]['lineId']
-            # lineno = lineid.split('-')[1]
-            # url = 'bus/query!search.action?LsName=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineno, cityid)
-            # data = cls._req_data(url)
-            # line_info = data['line']
-            # return line_info
             return line_list
         else:
             return None

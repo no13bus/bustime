@@ -37,7 +37,7 @@ def query(**kwargs):
         reply = u'亲 没找到呢。猜你想查找的是下面的线路id:\n' + '\n'.join([line['lineId'] for line in lineinfo])
         return weixin.reply(username, sender=sender, content=reply)
 
-    lineid = '-'.join.(cs[0:3])
+    lineid = '-'.join(cs[0:3])
     search_stop_name_or_id = cs[-1]
     reply_businfo = u'%s->%s\n首:%s  终:%s\n' % (lineinfo['startStopName'], lineinfo['endStopName'], lineinfo['firstTime'], lineinfo['lastTime'])
     reply_realtime_info = BusTime.get_bus_realtime(lineid, cityid, search_stop_name_or_id)

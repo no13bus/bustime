@@ -24,4 +24,6 @@
 ## 提供一个查询实时公交信息的微信公共号
 - ![image](https://raw.githubusercontent.com/no13bus/bustime/master/weixin.jpg)
 
+## 支持的城市如下:
+- 杭州 天津 重庆 成都 兰州 南昌 郑州 东莞 青岛 苏州 乌鲁木齐 瑞安 佛山 深圳 中山 太原 惠州 武汉 许昌 开封 邯郸 焦作
 ## 欢迎fork star和提issue

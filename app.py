@@ -36,10 +36,11 @@ def query(**kwargs):
     elif lineinfo and isinstance(lineinfo, list):
         reply = u'亲 没找到呢。猜你想查找的是下面的线路id:\n' + '\n'.join([line['lineId'] for line in lineinfo])
         return weixin.reply(username, sender=sender, content=reply)
-    else:
+    elif lineinfo and isinstance(lineinfo, unicode):
         return weixin.reply(username, sender=sender, content=lineinfo)
 
-
+    print type(lineinfo)
+    
     lineid = lineinfo['lineId']
     search_stop_name_or_id = cs[-1]
     reply_businfo = u'%s->%s\n首:%s  终:%s\n' % (lineinfo['startStopName'], lineinfo['endStopName'], lineinfo['firstTime'], lineinfo['lastTime'])

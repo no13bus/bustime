@@ -18,8 +18,7 @@ def query(**kwargs):
     message_type = kwargs.get('type')
     content = kwargs.get('content')
     if message_type == 'event' and kwargs.get('event') == 'subscribe':
-        print Tip_MESSAGE
-        return weixin.reply(username, type='news', sender=sender, content='123')
+        return weixin.reply(username, type='text', sender=sender, content=Tip_MESSAGE)
     if message_type != 'text' or (not content):
         return weixin.reply(username, sender=sender, content=ERROR_MESSAGE)
     cs = content.split('-')

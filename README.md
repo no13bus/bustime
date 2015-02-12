@@ -13,6 +13,6 @@
 - 直接执行 `python query.py`
 
 # 提供一个查询实时公交信息的微信公共号
-- ![]()
+- [image](https://raw.githubusercontent.com/no13bus/bustime/master/weixin.jpg)
 
 # 欢迎fork star和提issue

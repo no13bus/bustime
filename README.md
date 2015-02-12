@@ -1,31 +1,29 @@
 # bustime
 提供实时的公交车信息查询以及api接口 支持微信公共号查询
 
+## 开始使用
+- `redis-server` 开启redis服务, 程序默认使用的是redis作为一些固定查询结果的缓存(如线路信息，城市列表)
+- `pip install -r requirement.txt`
+- 配置好config.py内关于微信公共平台的设置
+- `python app.py` 即可开启微信公共平台应用
+- `python query.py` 命令行查询实时公交信息
 
-get_line_infos
-# return
-# "line": {
-#     "direction": 1,
-#     "endStopName": "唐山道",
-#     "firstTime": "5:30",
-#     "lastTime": "20:40",
-#     "lineId": "022-610-1",
-#     "lineName": "610",
-#     "lineNo": "610",
-#     "startStopName": "柴楼新庄园公交站",
-#     "stopsNum": "32"
-# },
+## 关于缓存的使用。
+- 使用的是[cachecore](https://github.com/core/cachecore)这个缓存库，支持redis, 文件缓存，memcache缓存等。开发者可以使用cachecore其他的缓存策略或者别的缓存库来替换api文件夹内的cache文件内的装饰器代码即可。
 
-'''根据站点名字查找公交车路线 返回的是字典数据格式 {开往方向:线路list}
-       每个线路的属性包括下面的属性
-        "direction": 0, 方向 1为反方向
-        "endStopName": "杨村客运站", 终点站
-        "leftStop": 3,
-        "leftStopNum": 3, leftStopNum意思是说该线路上面的最近的一个车距离本站还有多少站 -2暂无数据 -1尚未发车 1 即将到站
-        "lineId": "022-607-0",
-        "lineName": "607", 公交车的名字
-        "lineNo": "607",
-        "nextStop": "九十二中", 下一站名称 也就是开往何方向的意思
-        "proTime": -1,
-        "startStopName": "天津站后广场" 始发站
-    '''
+## 接口 (see api folder)
+- 根据城市区号, 公交路线的号码, 正逆向, 站点序号或者名字来查询当前距离你最近的公交车的实时跟踪情况 (get_bus_realtime)
+- 提供支持实时查询的城市列表 (get_cities)
+- 单个路线的详细信息查询(起点 终点 首发时间和终点时间) (get_line_infos and get_real_line_infos)
+- 单个路线的各个站点的名称查询 (get_line_orders)
+- 具体使用方法见 test.py里面的例子
+
+## 提供一个简单命令行查询接口。
+- 直接执行 `python query.py`
+
+## 提供一个查询实时公交信息的微信公共号
+- ![image](https://raw.githubusercontent.com/no13bus/bustime/master/weixin.jpg)
+
+## 支持的城市如下:
+- 杭州 天津 重庆 成都 兰州 南昌 郑州 东莞 青岛 苏州 乌鲁木齐 瑞安 佛山 深圳 中山 太原 惠州 武汉 许昌 开封 邯郸 焦作
+## 欢迎fork star和提issue

@@ -27,6 +27,7 @@ DISTRICT = {
     '0391': u'焦作',
 }
 
+# weixin api setting
 WEIXIN_TOKEN = ''
 WEIXIN_SENDER = ''
 WEIXIN_EXPIRES_IN = ''

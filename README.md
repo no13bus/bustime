@@ -1,6 +1,15 @@
 # bustime
 提供实时的公交车信息查询以及api接口 支持微信公共号查询
 
+## 开始使用
+- `redis-server` 开启redis服务, 程序默认使用的是redis作为一些固定查询结果的缓存(如线路信息，城市列表)
+- `pip install -r requirement.txt`
+- 配置好config.py内关于微信公共平台的设置
+- `python app.py` 即可开启微信公共平台应用
+- `python query.py` 命令行查询实时公交信息
+
+## 关于缓存的使用。
+- 使用的是[cachecore](https://github.com/core/cachecore)这个缓存库，支持redis, 文件缓存，memcache缓存等。开发者可以使用cachecore其他的缓存策略或者别的缓存库来替换api文件夹内的cache文件内的装饰器代码即可。
 
 ## 接口 (see api folder)
 - 根据城市区号, 公交路线的号码, 正逆向, 站点序号或者名字来查询当前距离你最近的公交车的实时跟踪情况 (get_bus_realtime)

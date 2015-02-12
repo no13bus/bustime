@@ -30,12 +30,7 @@ DISTRICT = {
 WEIXIN_TOKEN = ''
 WEIXIN_SENDER = ''
 WEIXIN_EXPIRES_IN = ''
-ON_FOLLOW_MESSAGE = {
-   'title': 'title',
-   'description': 'description',
-   'picurl': '',
-   'url': '',
-}
+
 
 
 try:

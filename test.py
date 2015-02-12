@@ -6,10 +6,12 @@ if __name__ == '__main__':
     line_orders = BusTime.get_line_orders('022-610-0', '006')
     for _, stopname in iter(line_orders):
         print stopname
+    print
     # cities
     cities = BusTime.get_cities()
     for city in cities:
         print u'城市=%s 城市id=%s' % (city, cities[city])
+    print
     # line_infos
     # lineinfo = BusTime.get_line_infos('610', '006')
     lineinfo = BusTime.get_line_infos('611', '006')
@@ -19,11 +21,13 @@ if __name__ == '__main__':
         print u'亲 没找到呢。猜你想查找的是下面的线路:\n' + '\n'.join([line['lineId'] for line in lineinfo])
     else:
         print u'没有查到该线路相关信息'
-    
+    print
     # realtime bus
-    # bus_realtime_result = BusTime.get_bus_realtime('022-610-0', '006', u'化工大楼')
-    bus_realtime_result = BusTime.get_bus_realtime('022-610-0', '006', '22')
+    # bus_realtime_result = BusTime.get_bus_realtime('022-633-0', '006', u'康桥里')
+    # bus_realtime_result = BusTime.get_bus_realtime('022-633-0', '006', '22')
+    bus_realtime_result = BusTime.get_bus_realtime('022-633-0', '006', 22)
     print bus_realtime_result
+    print
     # 简单的返回按照站点搜索经过该站点的公交车情况
     search = BusTime.search_by_stopname(u'南市', '006')
     print search

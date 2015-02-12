@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 weixin = Weixin(app)
 app.add_url_rule('/wechat', view_func=weixin.view_func)
-Tip_MESSAGE = u'查询格式为 "城市区号-线路号-正逆向-站点序号或者站点名字".\n1代表正向行使，0代表逆向行驶\n例子: 022-610-0-12 或 022-610-1-马庄'
+Tip_MESSAGE = u'查询格式为 "城市区号-线路号-正逆向-站点序号或者站点名字".\n1代表正向行使，0代表逆向行驶\n例子: 022-633-0-12 或 022-633-1-康桥里'
 ERROR_MESSAGE = u'亲 请输入正确的格式呦\n' + Tip_MESSAGE
 
 @weixin.register('*')

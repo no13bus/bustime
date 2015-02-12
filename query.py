@@ -4,7 +4,6 @@ from api.bustime import BusTime
 from config import DISTRICT
 
 
-
 if __name__ == '__main__':
     lineid = click.prompt(u'请输入线路id。格式为 "城市区号-线路号-0" 或者 "城市区号-线路号-1".\n1正向行使，0逆向行驶\n', value_proc=str)
     city = DISTRICT[lineid.split('-')[0]]

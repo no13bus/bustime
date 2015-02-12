@@ -26,7 +26,7 @@ def query(**kwargs):
                    username, type='news', sender=sender, articles=[msg]
                )
 
-        
+
     if not content:
         reply = u'我好笨笨哦，还不懂你在说什么'
         return weixin.reply(username, sender=sender, content=reply)
@@ -58,4 +58,4 @@ def query(**kwargs):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

@@ -1,5 +1,4 @@
 # coding: utf-8
-__author__ = 'no13bus'
 from api.bustime import BusTime
 
 if __name__ == '__main__':
@@ -9,21 +8,21 @@ if __name__ == '__main__':
         print stopname
     # cities
     cities = BusTime.get_cities()
-    for city, cityid in iter(cities):
-        print city, cityid
+    for city in cities:
+        print u'城市=%s 城市id=%s' % (city, cities[city])
     # line_infos
-    lineinfo = BusTime.get_line_infos(u'610', '006')
-    if lineinfo:
-        print '{0}->{1}\n首:{2}  终:{3}'.format(lineinfo['startStopName'].encode('utf-8'), lineinfo['endStopName'].encode('utf-8'), lineinfo['firstTime'].encode('utf-8'), lineinfo['lastTime'].encode('utf-8'))
+    # lineinfo = BusTime.get_line_infos('610', '006')
+    lineinfo = BusTime.get_line_infos('611', '006')
+    if lineinfo and isinstance(lineinfo, dict):
+        print u'%s->%s\n首:%s  终:%s' % (lineinfo['startStopName'], lineinfo['endStopName'], lineinfo['firstTime'], lineinfo['lastTime'])
+    elif lineinfo and isinstance(lineinfo, list):
+        print u'亲 没找到呢。猜你想查找的是下面的线路:\n' + '\n'.join([line['lineId'] for line in lineinfo])
     else:
         print u'没有查到该线路相关信息'
-    lineinfo1 = BusTime.get_line_infos(u'611', '006')
-    if lineinfo1:
-        print '{0}->{1}\n首:{2}  终:{3}'.format(lineinfo1['startStopName'].encode('utf-8'), lineinfo1['endStopName'].encode('utf-8'), lineinfo1['firstTime'].encode('utf-8'), lineinfo1['lastTime'].encode('utf-8'))
-    else:
-        print u'没有查到该线路相关信息'
+    
     # realtime bus
-    bus_realtime_result = BusTime.get_bus_realtime('022-610-0', '006', u'南市')
+    # bus_realtime_result = BusTime.get_bus_realtime('022-610-0', '006', u'化工大楼')
+    bus_realtime_result = BusTime.get_bus_realtime('022-610-0', '006', '22')
     print bus_realtime_result
     # 简单的返回按照站点搜索经过该站点的公交车情况
     search = BusTime.search_by_stopname(u'南市', '006')

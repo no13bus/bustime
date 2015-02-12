@@ -34,7 +34,7 @@ class BusTime(object):
         data = cls._req_data(url)
         data_cities = data['cities']
         if data and data_cities:
-            return [(city['cityName'], city['cityId']) for city in data_cities]
+            return {city['cityName']:city['cityId'] for city in data_cities}
         else:
             return None
 
@@ -63,24 +63,27 @@ class BusTime(object):
             line_info = data['line']
             return line_info
         elif data and (not data_has_line) and len(line_list) > 0:
-            lineid = line_list[0]['lineId']
-            lineno = lineid.split('-')[1]
-            url = 'bus/query!search.action?LsName=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineno, cityid)
-            data = cls._req_data(url)
-            line_info = data['line']
-            return line_info
+            # lineid = line_list[0]['lineId']
+            # lineno = lineid.split('-')[1]
+            # url = 'bus/query!search.action?LsName=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineno, cityid)
+            # data = cls._req_data(url)
+            # line_info = data['line']
+            # return line_info
+            return line_list
         else:
             return None
 
     @classmethod
     def get_bus_realtime(cls, lineid, cityid, search_stop_name_or_id):
+        if isinstance(search_stop_name_or_id, int):
+            search_stop_name_or_id = str(search_stop_name_or_id)
         url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineid, cityid)
         data = cls._req_data(url)
         line_orders = cls.get_line_orders(lineid, cityid)
         order = 0
         if data and line_orders and ('bus' in data) and data['bus']:
             for k, v in iter(line_orders):
-                if k == search_stop_name_or_id or v == search_stop_name_or_id:
+                if str(k) == search_stop_name_or_id or v == search_stop_name_or_id:
                     order = k
                     break
             if not order:
@@ -97,8 +100,10 @@ class BusTime(object):
                 return u'最近一辆车{0}秒前报告位置, 距离本站{1}站'.format(max_order_dict['lastTime'], remaining_num)
             elif order == max_order:
                 return u'最近一辆车{0}秒前报告位置, 即将到站. 距离{1}米'.format(max_order_dict['lastTime'], max_order_dict['distance'])
+        elif data['nobustip']:
+            return data['nobustip']
         else:
-            print u'realtime data is none'
+            return None
 
     @classmethod
     @cache_func(rediscache, None)

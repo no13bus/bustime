@@ -40,6 +40,7 @@ class BusTime(object):
 
     @classmethod
     def search_by_stopname(cls, stopname, cityid):
+        '''search_by_stopname'''
         url = 'busno/stop!slist.action?stop={0}&cityId={1}'.format(stopname.encode('utf-8'), cityid)
         data = cls._req_data(url)
         data_has_lines = 'lines' in data

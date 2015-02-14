@@ -6,7 +6,7 @@ from cachecore import RedisCache
 from .cache import cache_func
 
 
-APIPREFIX = 'http://api.che.cn:9000/'
+APIPREFIX = 'http://test_cheche.com/'
 rediscache = RedisCache(default_timeout=3600 * 24 * 30)
 
 

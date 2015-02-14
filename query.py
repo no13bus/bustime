@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 import click
 from api.bustime import BusTime
 from config import DISTRICT

@@ -19,7 +19,6 @@ class BusTime(object):
             print 'url=%s, error is %s' % (url, ex.message)
             return None
         c = r.content
-        c = c.replace('**YGKJ', '').replace('YGKJ##', '')
         j = json.loads(c)
         if j['jsonr']['data']:
             return j['jsonr']['data']
@@ -30,17 +29,17 @@ class BusTime(object):
     @classmethod
     @cache_func(rediscache, None)
     def get_cities(cls):
-        url = 'wow/city!morecities.action?sign=&s=android&v=1.3.2'
+        url = 'wowwow/city!more.action?v=1.3.2'
         data = cls._req_data(url)
         data_cities = data['cities']
         if data and data_cities:
-            return {city['cityName']:city['cityId'] for city in data_cities}
+            return {city['cn']:city['cd'] for city in data_cities}
         else:
             return None
 
     @classmethod
     def search_by_stopname(cls, stopname, cityid):
-        url = 'bus/stop!stoplist.action?stopName={0}&s=android&v=1.3.2&cityId={1}&sign='.format(stopname.encode('utf-8'), cityid)
+        url = 'busno/stop!slist.action?stop={0}&cityId={1}'.format(stopname.encode('utf-8'), cityid)
         data = cls._req_data(url)
         data_has_lines = 'lines' in data
         if data and data_has_lines:
@@ -55,7 +54,7 @@ class BusTime(object):
     @classmethod
     @cache_func(rediscache, timeout=3600)
     def get_line_infos(cls, lineno, cityid):
-        url = 'bus/query!search.action?LsName=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineno, cityid)
+        url = 'busno/query!q.action?ln=%s&v=1.3.2&cityId=%s' % (lineno, cityid)
         data = cls._req_data(url)
         data_has_line = 'line' in data
         line_list = data['linelist']
@@ -70,7 +69,7 @@ class BusTime(object):
     @classmethod
     @cache_func(rediscache, None)
     def get_real_line_infos(cls, lineid, cityid):
-        url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineid, cityid)
+        url = 'busno/line!m2.action?lineId=%s&cd=%s' % (lineid, cityid)
         data = cls._req_data(url)
         data_has_line = 'line' in data
         if data and data_has_line:
@@ -83,7 +82,7 @@ class BusTime(object):
     def get_bus_realtime(cls, lineid, cityid, search_stop_name_or_id):
         if isinstance(search_stop_name_or_id, int):
             search_stop_name_or_id = str(search_stop_name_or_id)
-        url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineid, cityid)
+        url = 'bus/line!m2.action?ld=%s&cityId=%s' % (lineid, cityid)
         data = cls._req_data(url)
         line_orders = cls.get_line_orders(lineid, cityid)
         order = 0
@@ -114,7 +113,7 @@ class BusTime(object):
     @classmethod
     @cache_func(rediscache, None)
     def get_line_orders(cls, lineid, cityid):
-        url = 'bus/line!map2.action?lineId=%s&s=android&v=1.3.2&cityId=%s&sign=' % (lineid, cityid)
+        url = 'busno/line!m2.action?&cd=%s' % (lineid, cityid)
         data = cls._req_data(url)
         data_map = data['map']
         if data and data_map:

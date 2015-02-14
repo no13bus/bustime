@@ -29,6 +29,7 @@ class BusTime(object):
     @classmethod
     @cache_func(rediscache, None)
     def get_cities(cls):
+        '''独上西楼 望断天涯路'''
         url = 'wowwow/city!more.action?v=1.3.2'
         data = cls._req_data(url)
         data_cities = data['cities']

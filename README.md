@@ -1,7 +1,7 @@
 # bustime
 提供实时的公交车信息查询以及api接口 支持微信公共号查询
 >  因为调用了一些接口，长久以后可能会存在一些无法调用的风险。so 项目仅作为学习和交流使用。
-
+[![repo](http://ohmyrepo.ml/static/ohmyrepo.png)](http://ohmyrepo.ml/show?u=no13bus&r=ohmyrepo)
 ## 开始使用
 - `redis-server` 开启redis服务, 程序默认使用的是redis作为一些固定查询结果的缓存(如线路信息，城市列表)
 - `pip install -r requirement.txt`
